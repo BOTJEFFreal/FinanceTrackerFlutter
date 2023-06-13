@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class FinanceScreen extends StatefulWidget {
   @override
@@ -8,12 +10,33 @@ class FinanceScreen extends StatefulWidget {
 
 class _FinanceScreenState extends State<FinanceScreen> {
   final _name = TextEditingController();
-
   final _price = TextEditingController();
 
-  List<String> _fianacesNames = [];
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  List<String> _fianacesNames = [];
   List<int> _fianacesPrices = [];
+
+  void addFinances() async {
+    if (_name.text.isNotEmpty) {
+      Map<String, dynamic> messages = {
+        "name": _name.text,
+        "price": _price.text,
+        "time": FieldValue.serverTimestamp(),
+      };
+
+      _name.clear();
+      _price.clear();
+      await _firestore
+          .collection('Finances')
+          .doc(_auth.currentUser!.displayName!)
+          .collection('Paid')
+          .add(messages);
+    } else {
+      print("Enter Some Text");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,21 +47,36 @@ class _FinanceScreenState extends State<FinanceScreen> {
         body: Container(
           margin: EdgeInsets.only(top: 40),
           child: _fianacesNames.length > 0
-              ? ListView.builder(
-                  itemCount: _fianacesNames.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return ListTile(
-                        trailing: Text(
-                          _fianacesPrices[index].toString(),
-                          style: TextStyle(
-                              color: _fianacesPrices[index] > 0
-                                  ? Colors.green
-                                  : Colors.red,
-                              fontSize: 15),
-                        ),
-                        title: Text(_fianacesNames[index]));
-                  })
+              ? SingleChildScrollView(
+            child: Container(
+              height: size.height / 1.25,
+              width: size.width,
+              child: StreamBuilder<QuerySnapshot>(
+                stream: _firestore
+                    .collection('Finances')
+                    .doc(_auth.currentUser!.displayName!)
+                    .collection('paid')
+                    .snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.data != null) {
+                    return ListView.builder(
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (context, index) {
+                          Map<String, dynamic> map = snapshot.data!.docs[index]
+                              .data() as Map<String, dynamic>;
+                          return message(size, map);
+                        });
+                  } else {
+                    return Container();
+                  }
+                },
+              ),
+            ),
+          )
               : Container(),
+
+
         ),
         bottomNavigationBar: Container(
           margin: EdgeInsets.only(bottom: 15),
@@ -88,3 +126,18 @@ class _FinanceScreenState extends State<FinanceScreen> {
     );
   }
 }
+
+Widget message(Size size, Map<String, dynamic> map) {
+
+  return ListTile(
+      trailing: Text(
+        map['name'].toString(),
+        style: TextStyle(
+            color: map['price'] > 0
+                ? Colors.green
+                : Colors.red,
+            fontSize: 15),
+      ),
+      title: Text(map['name']));
+}
+

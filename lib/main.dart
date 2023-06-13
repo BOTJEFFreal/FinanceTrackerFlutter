@@ -1,12 +1,12 @@
-import 'package:financetracker/Screens/financePage.dart';
 import 'package:financetracker/Screens/loginPage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 
-void main() {
-  Firebase.initializeApp();
-  runApp(LoginPage());
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -16,12 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: FinanceScreen()
+      home: LoginPage()
     );
   }
 }
