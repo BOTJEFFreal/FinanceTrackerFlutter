@@ -1,11 +1,12 @@
-import 'package:financetracker/Screens/FinancePage.dart';
+import 'package:financetracker/Screens/financePage.dart';
+import 'package:financetracker/Screens/loginPage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 
 void main() {
   Firebase.initializeApp();
-  runApp(MyApp());
+  runApp(LoginPage());
 }
 
 class MyApp extends StatelessWidget {
