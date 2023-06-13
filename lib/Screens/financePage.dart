@@ -15,27 +15,21 @@ class _FinanceScreenState extends State<FinanceScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  List<String> _fianacesNames = [];
-  List<int> _fianacesPrices = [];
+  addFinances(String name, String price) async {
+    print(name);
+    print(price);
+    Map<String, dynamic> messages = {
+      "name": name,
+      "price": price,
+      "time": FieldValue.serverTimestamp(),
+    };
 
-  void addFinances() async {
-    if (_name.text.isNotEmpty) {
-      Map<String, dynamic> messages = {
-        "name": _name.text,
-        "price": _price.text,
-        "time": FieldValue.serverTimestamp(),
-      };
-
-      _name.clear();
-      _price.clear();
-      await _firestore
+    await _firestore
           .collection('Finances')
           .doc(_auth.currentUser!.displayName!)
           .collection('Paid')
           .add(messages);
-    } else {
-      print("Enter Some Text");
-    }
+
   }
 
   @override
@@ -46,8 +40,7 @@ class _FinanceScreenState extends State<FinanceScreen> {
       child: Scaffold(
         body: Container(
           margin: EdgeInsets.only(top: 40),
-          child: _fianacesNames.length > 0
-              ? SingleChildScrollView(
+          child: SingleChildScrollView(
             child: Container(
               height: size.height / 1.25,
               width: size.width,
@@ -55,7 +48,7 @@ class _FinanceScreenState extends State<FinanceScreen> {
                 stream: _firestore
                     .collection('Finances')
                     .doc(_auth.currentUser!.displayName!)
-                    .collection('paid')
+                    .collection('Paid')
                     .snapshots(),
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -74,7 +67,6 @@ class _FinanceScreenState extends State<FinanceScreen> {
               ),
             ),
           )
-              : Container(),
 
 
         ),
@@ -107,10 +99,8 @@ class _FinanceScreenState extends State<FinanceScreen> {
               ),
               ElevatedButton(
                   onPressed: () {
-                    setState(() {
-                      _fianacesPrices.add(int.parse(_price.text));
-                      _fianacesNames.add(_name.text);
-                    });
+                    addFinances(_name.text,_price.text);
+
                     _name.clear();
                     _price.clear();
                   },
@@ -131,9 +121,9 @@ Widget message(Size size, Map<String, dynamic> map) {
 
   return ListTile(
       trailing: Text(
-        map['name'].toString(),
+        map['price'].toString(),
         style: TextStyle(
-            color: map['price'] > 0
+            color: int.parse(map['price'])  > 0
                 ? Colors.green
                 : Colors.red,
             fontSize: 15),
