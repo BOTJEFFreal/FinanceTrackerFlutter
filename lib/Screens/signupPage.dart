@@ -1,4 +1,4 @@
-import 'package:financetracker/Screens/signupPage.dart';
+import 'package:financetracker/Screens/loginPage.dart';
 import 'package:flutter/material.dart';
 
 import '../Logic/Auth.dart';
@@ -6,12 +6,18 @@ import '../components/my_button.dart';
 import '../components/my_textfield.dart';
 import 'FinancePage.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+class SignupPage extends StatelessWidget {
+  SignupPage({super.key});
 
   // text editing controllers
+  final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
+  // sign up method
+  signUp(context) {
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,17 +28,17 @@ class LoginPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                'Welcome Back!',
-                style: TextStyle(
-                  color: Colors.grey[700],
-                  fontSize: 16,
-                ),
-              ),
-
               const SizedBox(height: 25),
 
               // username textfield
+              MyTextField(
+                controller: usernameController,
+                hintText: 'Username',
+                obscureText: false,
+              ),
+
+              const SizedBox(height: 10),
+
               MyTextField(
                 controller: emailController,
                 hintText: 'Email',
@@ -59,8 +65,8 @@ class LoginPage extends StatelessWidget {
                     TextButton(
                       onPressed: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => SignupPage())
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
                         );
                       },
                       child: Text(
@@ -73,27 +79,26 @@ class LoginPage extends StatelessWidget {
               ),
 
               const SizedBox(height: 25),
-
               // sign in button
-              MyButton(onTap: (){
-                if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+              MyButton(onTap: () {
+                if (usernameController.text.isNotEmpty &&
+                    emailController.text.isNotEmpty &&
+                    passwordController.text.isNotEmpty) {
 
-
-                  logIn(emailController.text, passwordController.text).then((user) {
+                  createAccount(usernameController.text, emailController.text, passwordController.text).then((user) {
                     if (user != null) {
-                      print("Login Sucessful");
 
                       Navigator.push(
                           context, MaterialPageRoute(builder: (_) => FinanceScreen()));
+                      print("Account Created Sucessfull");
                     } else {
                       print("Login Failed");
-
                     }
                   });
                 } else {
-                  print("Please fill form correctly");
+                  print("Please enter Fields");
                 }
-              }, text: "Sign In"),
+              },text: "Sign Up"),
             ],
           ),
         ),
