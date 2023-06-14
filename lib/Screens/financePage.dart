@@ -58,12 +58,12 @@ class _FinanceScreenState extends State<FinanceScreen> {
                         itemBuilder: (context, index) {
                           Map<String, dynamic> map = snapshot.data!.docs[index]
                               .data() as Map<String, dynamic>;
-                          return GestureDetector(onHorizontalDragDown:() async {
+                          return GestureDetector(onTap: () async {
                             await  _firestore.collection('Finances')
                                 .doc(_auth.currentUser!.displayName!)
                                 .collection('Paid').doc(snapshot.data!.docs[index].id).delete();
                             setState(() {
-
+                              
                             });
                           },child: message(size, map));
                         });
