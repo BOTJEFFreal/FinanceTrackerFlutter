@@ -58,7 +58,14 @@ class _FinanceScreenState extends State<FinanceScreen> {
                         itemBuilder: (context, index) {
                           Map<String, dynamic> map = snapshot.data!.docs[index]
                               .data() as Map<String, dynamic>;
-                          return message(size, map);
+                          return GestureDetector(onHorizontalDragDown:() async {
+                            await  _firestore.collection('Finances')
+                                .doc(_auth.currentUser!.displayName!)
+                                .collection('Paid').doc(snapshot.data!.docs[index].id).delete();
+                            setState(() {
+
+                            });
+                          },child: message(size, map));
                         });
                   } else {
                     return Container();
@@ -119,15 +126,17 @@ class _FinanceScreenState extends State<FinanceScreen> {
 
 Widget message(Size size, Map<String, dynamic> map) {
 
-  return ListTile(
-      trailing: Text(
-        map['price'].toString(),
-        style: TextStyle(
-            color: int.parse(map['price'])  > 0
-                ? Colors.green
-                : Colors.red,
-            fontSize: 15),
-      ),
-      title: Text(map['name']));
+  return Container(
+    child: ListTile(
+        trailing: Text(
+          map['price'].toString(),
+          style: TextStyle(
+              color: int.parse(map['price'])  > 0
+                  ? Colors.green
+                  : Colors.red,
+              fontSize: 15),
+        ),
+        title: Text(map['name'])),
+  );
 }
 
