@@ -63,7 +63,7 @@ class _FinanceScreenState extends State<FinanceScreen> {
                                 .doc(_auth.currentUser!.displayName!)
                                 .collection('Paid').doc(snapshot.data!.docs[index].id).delete();
                             setState(() {
-                              
+
                             });
                           },child: message(size, map));
                         });
