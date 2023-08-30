@@ -15,9 +15,7 @@ class SignupPage extends StatelessWidget {
   final passwordController = TextEditingController();
 
   // sign up method
-  signUp(context) {
-
-  }
+  signUp(context) {}
 
   @override
   Widget build(BuildContext context) {
@@ -80,25 +78,30 @@ class SignupPage extends StatelessWidget {
 
               const SizedBox(height: 25),
               // sign in button
-              MyButton(onTap: () {
-                if (usernameController.text.isNotEmpty &&
-                    emailController.text.isNotEmpty &&
-                    passwordController.text.isNotEmpty) {
-
-                  createAccount(usernameController.text, emailController.text, passwordController.text).then((user) {
-                    if (user != null) {
-
-                      Navigator.push(
-                          context, MaterialPageRoute(builder: (_) => FinanceScreen()));
-                      print("Account Created Sucessfull");
+              MyButton(
+                  onTap: () {
+                    if (usernameController.text.isNotEmpty &&
+                        emailController.text.isNotEmpty &&
+                        passwordController.text.isNotEmpty) {
+                      createAccount(usernameController.text,
+                              emailController.text, passwordController.text)
+                          .then((user) {
+                        if (user != null) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => LoginPage())
+                          );
+                          print("Account Created Sucessfull");
+                        } else {
+                          print("signup Failed");
+                        }
+                      });
                     } else {
-                      print("Login Failed");
+                      print("Please enter Fields");
                     }
-                  });
-                } else {
-                  print("Please enter Fields");
-                }
-              },text: "Sign Up"),
+                  },
+                  text: "Sign Up"),
             ],
           ),
         ),
